@@ -1,10 +1,10 @@
 import asyncio
 import os
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram.fsm import State, StatesGroup
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.utils import executor
 
 TOKEN = os.getenv('BOT_TOKEN')
 
@@ -13,7 +13,7 @@ if not TOKEN:
 
 bot = Bot(token=TOKEN)
 storage = MemoryStorage()
-dp = Dispatcher(storage=storage)
+dp = Dispatcher(bot, storage=storage)
 
 
 class ComputerBuild(StatesGroup):
@@ -22,7 +22,7 @@ class ComputerBuild(StatesGroup):
     contact = State()
 
 
-@dp.message(Command("start"))
+@dp.message_handler(commands=['start'])
 async def cmd_start(message: types.Message):
     await message.answer(
         "👋 Привет! Я помогу собрать компьютер.\n"
@@ -30,9 +30,9 @@ async def cmd_start(message: types.Message):
     )
 
 
-@dp.message(Command("build"))
-async def cmd_build(message: types.Message, state: FSMContext):
-    await state.set_state(ComputerBuild.budget)
+@dp.message_handler(commands=['build'])
+async def cmd_build(message: types.Message):
+    await ComputerBuild.budget.set()
     await message.answer(
         "💰 Какой у вас бюджет на компьютер?\n"
         "Напишите сумму в рублях:",
@@ -40,12 +40,13 @@ async def cmd_build(message: types.Message, state: FSMContext):
     )
 
 
-@dp.message(ComputerBuild.budget)
+@dp.message_handler(state=ComputerBuild.budget)
 async def process_budget(message: types.Message, state: FSMContext):
     try:
         budget = int(message.text)
         await state.update_data(budget=budget)
-        await state.set_state(ComputerBuild.purpose)
+        await ComputerBuild.next()
+        
         kb = [
             [types.KeyboardButton(text="🎮 Игры")],
             [types.KeyboardButton(text="💼 Работа/Офис")],
@@ -62,10 +63,10 @@ async def process_budget(message: types.Message, state: FSMContext):
         await message.answer("Пожалуйста, введите число (только цифры)")
 
 
-@dp.message(ComputerBuild.purpose)
+@dp.message_handler(state=ComputerBuild.purpose)
 async def process_purpose(message: types.Message, state: FSMContext):
     await state.update_data(purpose=message.text)
-    await state.set_state(ComputerBuild.contact)
+    await ComputerBuild.next()
 
     kb = [
         [types.KeyboardButton(text="📱 Поделиться номером", request_contact=True)],
@@ -80,13 +81,13 @@ async def process_purpose(message: types.Message, state: FSMContext):
     )
 
 
-@dp.message(ComputerBuild.contact, lambda m: m.contact is not None)
+@dp.message_handler(state=ComputerBuild.contact, content_types=types.ContentType.CONTACT)
 async def process_contact_button(message: types.Message, state: FSMContext):
     phone = message.contact.phone_number
     await finish_build(message, state, phone)
 
 
-@dp.message(ComputerBuild.contact)
+@dp.message_handler(state=ComputerBuild.contact)
 async def process_contact_manual(message: types.Message, state: FSMContext):
     phone = message.text
     await finish_build(message, state, phone)
@@ -112,7 +113,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
         f"🎯 Цель: {data['purpose']}\n\n"
         f"🖥️ Сборка:\n{build}"
     )
-    await state.clear()
+    await state.finish()
 
 
 def generate_build(budget: int, purpose: str) -> str:
@@ -145,12 +146,6 @@ def generate_build(budget: int, purpose: str) -> str:
 • Корпус: Полноразмерный"""
 
 
-async def main():
-    print("🚀 Бот запускается...")
-    print(f"🤖 Бот: {await bot.get_me()}")
-    print("✅ Бот готов к работе!")
-    await dp.start_polling(bot)
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    print("🚀 Бот запускается...")
+    executor.start_polling(dp, skip_updates=True)
