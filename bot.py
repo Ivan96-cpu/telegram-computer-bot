@@ -11,8 +11,8 @@ TOKEN = os.getenv('BOT_TOKEN')
 if not TOKEN:
     raise ValueError("BOT_TOKEN не найден! Добавьте переменную окружения BOT_TOKEN")
 
-MY_USERNAME = "@TQR777"  
-MY_LINK = f"https://t.me/{TQR777}"
+MY_USERNAME = "TQR777"  
+MY_LINK = f"https://t.me/{MY_USERNAME}"
 
 ADMIN_ID = 1655647413
 
@@ -118,8 +118,8 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
             f"⚠️ **Бюджет {budget:,} руб. меньше минимального порога (50 000 руб.)**\n\n"
             f"К сожалению, для такого бюджета сложно собрать качественный компьютер.\n\n"
             f"✍️ **Напишите мне лично, и я помогу подобрать оптимальный вариант:**\n"
-            f"👉 @{TQR777}\n\n"
-            f"Или нажмите ссылку: {https://t.me/TQR777}\n\n"
+            f"👉 @{MY_USERNAME}\n\n"
+            f"Или нажмите ссылку: {MY_LINK}\n\n"
             f"Обсудим ваши задачи и подберем лучшее решение! 🖥️",
             reply_markup=types.ReplyKeyboardRemove()
         )
@@ -169,7 +169,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
 
 
 def generate_build(budget: int, purpose: str) -> str:
-    if budget > 75000 and budget < 90000:
+    if 75000 <= budget < 90000:
         return """💰 Сборка базовая:
 • Процессор: Intel Core i3-12100F
 • Видеокарта: GTX 1650
@@ -178,7 +178,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 256GB NVMe
 • Блок питания: 500W
 • Корпус: Мини-башня"""
-    elif budget > 125000 and budget < 140000:
+    elif 125000 <= budget < 14000:
         return """💪 Сборка популярная:
 • Процессор: Intel Core i5-12400F
 • Видеокарта: RTX 5060
@@ -187,7 +187,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 512GB NVMe
 • Блок питания: 750W
 • Корпус: Средний башня"""
-    elif budget > 195000 and budget < 230000:
+    elif 195000 <= budget < 230000:
         return """😎 Сборка флагман:
  Процессор: Intel Core i7-13700KF
 • Видеокарта: RTX 5070
@@ -196,7 +196,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 1TB NVMe
 • Блок питания: 750W
 • Корпус: Полноразмерный"""
-    elif budget > 317000 and budget < 350000:
+    elif 317000 <= budget <= 350000:
         return """🚀 Премиальная сборка:
 • Процессор: Intel Core i9-14900K
 • Видеокарта: RTX 5080
@@ -205,8 +205,15 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 2TB NVMe
 • Блок питания: 1000W
 • Корпус: Полноразмерный"""
+         else:
+        return f"""⚙️ **Сборка под ваш бюджет {budget:,}₽:**
+
+Подберем индивидуально! Напишите мне лично: @{MY_USERNAME}
+
+Мы подберем оптимальную конфигурацию под ваши задачи и бюджет."""
 
 
 if __name__ == "__main__":
     print("🚀 Бот запускается...")
+    print(f"🤖 Бот: @{MY_USERNAME}")
     executor.start_polling(dp, skip_updates=True)
