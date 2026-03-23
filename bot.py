@@ -121,7 +121,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
             f"✍️ **Напишите мне лично, и я помогу подобрать оптимальный вариант:**\n"
             f"👉 @{MY_USERNAME}\n\n"
             f"Или нажмите ссылку: {MY_LINK}\n\n"
-            f"Обсудим ваши задачи и подберем лучшее решение! 🖥️",
+            f"Обсудим ваши задачи и подберем лучшее решение! Объявления тут https://t.me/gametopershop23 🖥️",
             reply_markup=types.ReplyKeyboardRemove()
         )
         
@@ -150,7 +150,8 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
             f"━━━━━━━━━━━━━━━━━━━━━\n"
             f"✍️ **Чтобы оформить заказ или уточнить детали, напишите мне:**\n"
             f"👉 @{MY_USERNAME}\n"
-            f"{MY_LINK}",
+            f"{MY_LINK}"
+            f" Объявления тут https://t.me/gametopershop23",
             reply_markup=types.ReplyKeyboardRemove()
         )
         
@@ -215,7 +216,7 @@ def generate_build(budget: int, purpose: str) -> str:
 
 Подберем индивидуально! Напишите мне лично: @{MY_USERNAME}
 
-Мы подберем оптимальную конфигурацию под ваши задачи и бюджет."""
+Мы подберем оптимальную конфигурацию под ваши задачи и бюджет. Объявления тут https://t.me/gametopershop23"""
 
 
 if __name__ == "__main__":
