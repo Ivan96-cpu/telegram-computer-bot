@@ -151,7 +151,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
             f"✍️ **Чтобы оформить заказ или уточнить детали, напишите мне:**\n"
             f"👉 @{MY_USERNAME}\n"
             f"{MY_LINK}"
-            f" Объявления тут https://t.me/gametopershop23",
+            f" **Объявления тут https://t.me/gametopershop23**\n",
             reply_markup=types.ReplyKeyboardRemove()
         )
         
