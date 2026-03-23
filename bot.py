@@ -32,7 +32,7 @@ class ComputerBuild(StatesGroup):
 async def cmd_start(message: types.Message):
     await message.answer(
         "👋 Привет! Я помогу собрать компьютер под ваш бюджет.\n\n"
-        "📌 **Как я работаю:**\n"
+        "📌 Как я работаю:\n"
         "• Если бюджет от 50 000 руб. — предложу готовую сборку\n"
         "• Если бюджет меньше 50 000 руб. — свяжу вас со мной лично\n\n"
         "Нажми /build чтобы начать"
@@ -43,7 +43,7 @@ async def cmd_start(message: types.Message):
 async def cmd_build(message: types.Message, state: FSMContext):
     await state.set_state(ComputerBuild.budget)
     await message.answer(
-        "💰 **Какой у вас бюджет на компьютер?**\n"
+        "💰 Какой у вас бюджет на компьютер?\n"
         "Напишите сумму в рублях (только цифры до 350000):",
         reply_markup=types.ReplyKeyboardRemove()
     )
@@ -70,7 +70,7 @@ async def process_budget(message: types.Message, state: FSMContext):
         keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
 
         await message.answer(
-            "🎯 **Для каких целей собираете компьютер?**\n"
+            "🎯 Для каких целей собираете компьютер?\n"
             "Выберите вариант:",
             reply_markup=keyboard
         )
@@ -91,7 +91,7 @@ async def process_purpose(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
 
     await message.answer(
-        "📞 **Как с вами связаться?**\n"
+        "📞 Как с вами связаться?\n"
         "Нажмите кнопку или введите номер телефона:",
         reply_markup=keyboard
     )
@@ -116,9 +116,9 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
     
     if budget < 50000:
         await message.answer(
-            f"⚠️ **Бюджет {budget:,} руб. меньше минимального порога (50 000 руб.)**\n\n"
+            f"⚠️ Бюджет {budget:,} руб. меньше минимального порога (50 000 руб.)\n\n"
             f"К сожалению, для такого бюджета сложно собрать качественный компьютер.\n\n"
-            f"✍️ **Напишите мне лично, и я помогу подобрать оптимальный вариант:**\n"
+            f"✍️ Напишите мне лично, и я помогу подобрать оптимальный вариант:\n"
             f"👉 @{MY_USERNAME}\n\n"
             f"Или нажмите ссылку: {MY_LINK}\n\n"
             f"Обсудим ваши задачи и подберем лучшее решение! Объявления тут https://t.me/gametopershop23 🖥️",
@@ -127,7 +127,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
         
         await bot.send_message(
             ADMIN_ID,
-            f"⚠️ **ЗАЯВКА С МАЛЫМ БЮДЖЕТОМ!**\n\n"
+            f"⚠️ ЗАЯВКА С МАЛЫМ БЮДЖЕТОМ!\n\n"
             f"👤 Пользователь: @{message.from_user.username or 'нет username'}\n"
             f"🆔 ID: {message.from_user.id}\n"
             f"📞 Телефон: {phone}\n"
@@ -141,29 +141,29 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
         build = generate_build(budget, purpose)
         
         await message.answer(
-            f"✅ **Ваша сборка готова!**\n\n"
+            f"✅ Ваша сборка готова!\n\n"
             f"{build}\n\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
-            f"💰 **Бюджет:** {budget:,} руб.\n"
-            f"🎯 **Цель:** {purpose}\n"
-            f"📞 **Ваш контакт:** {phone}\n\n"
+            f"💰 Бюджет: {budget:,} руб.\n"
+            f"🎯 Цель: {purpose}\n"
+            f"📞 Ваш контакт: {phone}\n\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
-            f"✍️ **Чтобы оформить заказ или уточнить детали, напишите мне:**\n"
+            f"✍️ Чтобы оформить заказ или уточнить детали, напишите мне:\n"
             f"👉 @{MY_USERNAME}\n"
             f"{MY_LINK}.\n"
-            f" **Объявления тут https://t.me/gametopershop23**\n",
+            f" Объявления тут https://t.me/gametopershop23\n",
             reply_markup=types.ReplyKeyboardRemove()
         )
         
         await bot.send_message(
             ADMIN_ID,
-            f"🆕 **НОВАЯ ЗАЯВКА!**\n\n"
+            f"🆕 НОВАЯ ЗАЯВКА!\n\n"
             f"👤 Пользователь: @{message.from_user.username or 'нет username'}\n"
             f"🆔 ID: {message.from_user.id}\n"
             f"📞 Телефон: {phone}\n"
             f"💰 Бюджет: {budget:,} руб.\n"
             f"🎯 Цель: {purpose}\n\n"
-            f"🖥️ **Сборка:**\n{build}\n\n"
+            f"🖥️ Сборка:\n{build}\n\n"
             f"🔗 Связаться: tg://user?id={message.from_user.id}"
         )
     
@@ -172,7 +172,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
 
 def generate_build(budget: int, purpose: str) -> str:
     if 75000 <= budget < 90000:
-        return """💰 **Сборка базовая (75 000 - 90 000₽):**
+        return """💰 Сборка базовая (75 000 - 90 000₽):
 • Процессор: Intel Core i3-12100F
 • Видеокарта: GTX 1650
 • Материнская плата: H610M
@@ -182,7 +182,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • Корпус: Мини-башня"""
     
     elif 125000 <= budget < 140000:
-        return """💪 **Сборка популярная (125 000 - 140 000₽):**
+        return """💪 Сборка популярная (125 000 - 140 000₽):
 • Процессор: Intel Core i5-12400F
 • Видеокарта: RTX 5060
 • Материнская плата: B760
@@ -192,7 +192,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • Корпус: Средний башня"""
     
     elif 195000 <= budget < 230000:
-        return """😎 **Сборка флагман (195 000 - 230 000₽):**
+        return """😎 Сборка флагман (195 000 - 230 000₽):
 • Процессор: Intel Core i7-13700KF
 • Видеокарта: RTX 5070
 • Материнская плата: B760
@@ -202,7 +202,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • Корпус: Полноразмерный"""
     
     elif 317000 <= budget <= 350000:
-        return """🚀 **Премиальная сборка (317 000 - 350 000₽):**
+        return """🚀 Премиальная сборка (317 000 - 350 000₽):
 • Процессор: Intel Core i9-14900K
 • Видеокарта: RTX 5080
 • Материнская плата: Z790
@@ -212,11 +212,11 @@ def generate_build(budget: int, purpose: str) -> str:
 • Корпус: Полноразмерный"""
     
     else:  
-        return f"""⚙️ **Сборка под ваш бюджет {budget:,}₽:**
+        return f"""⚙️ Сборка под ваш бюджет {budget:,}₽:
 
 Подберем индивидуально! Напишите мне лично: @{MY_USERNAME}
 
-Мы подберем оптимальную конфигурацию под ваши задачи и бюджет. Объявления тут https://t.me/gametopershop23"""
+Мы подберем оптимальную конфигурацию под ваши задачи и бюджет. Объявления тут https://t.me/gametopershop23😉"""
 
 
 if __name__ == "__main__":
