@@ -114,7 +114,6 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
     purpose = data['purpose']
     
     if budget < 50000:
-        # Малый бюджет — просим написать лично
         await message.answer(
             f"⚠️ **Бюджет {budget:,} руб. меньше минимального порога (50 000 руб.)**\n\n"
             f"К сожалению, для такого бюджета сложно собрать качественный компьютер.\n\n"
