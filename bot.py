@@ -18,7 +18,7 @@ ADMIN_ID = 1655647413
 
 bot = Bot(token=TOKEN)
 storage = MemoryStorage()
-dp = Dispatcher(storage=storage)
+dp = Dispatcher(bot, storage=storage)
 
 
 class ComputerBuild(StatesGroup):
@@ -165,7 +165,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
             f"🔗 Связаться: tg://user?id={message.from_user.id}"
         )
     
-    await state.clear()
+    await state.finish()
 
 
 def generate_build(budget: int, purpose: str) -> str:
@@ -178,7 +178,7 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 256GB NVMe
 • Блок питания: 500W
 • Корпус: Мини-башня"""
-    elif 125000 <= budget < 14000:
+    elif 125000 <= budget < 140000:
         return """💪 Сборка популярная:
 • Процессор: Intel Core i5-12400F
 • Видеокарта: RTX 5060
@@ -205,9 +205,8 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 2TB NVMe
 • Блок питания: 1000W
 • Корпус: Полноразмерный"""
-         else:
-        return f"""⚙️ **Сборка под ваш бюджет {budget:,}₽:**
-
+     else:
+        return f"""⚙️ **Сборка под ваш бюджет {budget:,}₽:**...
 Подберем индивидуально! Напишите мне лично: @{MY_USERNAME}
 
 Мы подберем оптимальную конфигурацию под ваши задачи и бюджет."""
