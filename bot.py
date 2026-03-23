@@ -3,6 +3,7 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils import executor
 
@@ -11,7 +12,7 @@ TOKEN = os.getenv('BOT_TOKEN')
 if not TOKEN:
     raise ValueError("BOT_TOKEN не найден! Добавьте переменную окружения BOT_TOKEN")
 
-MY_USERNAME = "TQR777"  
+MY_USERNAME = "TQR777"
 MY_LINK = f"https://t.me/{MY_USERNAME}"
 
 ADMIN_ID = 1655647413
@@ -27,7 +28,7 @@ class ComputerBuild(StatesGroup):
     contact = State()
 
 
-@dp.message(commands=['start'])
+@dp.message_handler(commands=['start'])
 async def cmd_start(message: types.Message):
     await message.answer(
         "👋 Привет! Я помогу собрать компьютер под ваш бюджет.\n\n"
@@ -38,7 +39,7 @@ async def cmd_start(message: types.Message):
     )
 
 
-@dp.message(Command("build"))
+@dp.message_handler(commands=['build'])
 async def cmd_build(message: types.Message, state: FSMContext):
     await state.set_state(ComputerBuild.budget)
     await message.answer(
@@ -48,7 +49,7 @@ async def cmd_build(message: types.Message, state: FSMContext):
     )
 
 
-@dp.message(ComputerBuild.budget)
+@dp.message_handler(state=ComputerBuild.budget)
 async def process_budget(message: types.Message, state: FSMContext):
     try:
         budget = int(message.text)
@@ -77,7 +78,7 @@ async def process_budget(message: types.Message, state: FSMContext):
         await message.answer("❌ Пожалуйста, введите число (только цифры, без пробелов и букв)")
 
 
-@dp.message(ComputerBuild.purpose)
+@dp.message_handler(state=ComputerBuild.purpose)
 async def process_purpose(message: types.Message, state: FSMContext):
     purpose = message.text
     await state.update_data(purpose=purpose)
@@ -96,13 +97,13 @@ async def process_purpose(message: types.Message, state: FSMContext):
     )
 
 
-@dp.message(ComputerBuild.contact, lambda m: m.contact is not None)
+@dp.message_handler(state=ComputerBuild.contact, content_types=types.ContentType.CONTACT)
 async def process_contact_button(message: types.Message, state: FSMContext):
     phone = message.contact.phone_number
     await finish_build(message, state, phone)
 
 
-@dp.message(ComputerBuild.contact)
+@dp.message_handler(state=ComputerBuild.contact)
 async def process_contact_manual(message: types.Message, state: FSMContext):
     phone = message.text.strip()
     await finish_build(message, state, phone)
@@ -170,7 +171,7 @@ async def finish_build(message: types.Message, state: FSMContext, phone: str):
 
 def generate_build(budget: int, purpose: str) -> str:
     if 75000 <= budget < 90000:
-        return """💰 Сборка базовая:
+        return """💰 **Сборка базовая (75 000 - 90 000₽):**
 • Процессор: Intel Core i3-12100F
 • Видеокарта: GTX 1650
 • Материнская плата: H610M
@@ -178,8 +179,9 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 256GB NVMe
 • Блок питания: 500W
 • Корпус: Мини-башня"""
+    
     elif 125000 <= budget < 140000:
-        return """💪 Сборка популярная:
+        return """💪 **Сборка популярная (125 000 - 140 000₽):**
 • Процессор: Intel Core i5-12400F
 • Видеокарта: RTX 5060
 • Материнская плата: B760
@@ -187,17 +189,19 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 512GB NVMe
 • Блок питания: 750W
 • Корпус: Средний башня"""
+    
     elif 195000 <= budget < 230000:
-        return """😎 Сборка флагман:
- Процессор: Intel Core i7-13700KF
+        return """😎 **Сборка флагман (195 000 - 230 000₽):**
+• Процессор: Intel Core i7-13700KF
 • Видеокарта: RTX 5070
 • Материнская плата: B760
 • Оперативная память: 32GB DDR5
 • SSD: 1TB NVMe
 • Блок питания: 750W
 • Корпус: Полноразмерный"""
+    
     elif 317000 <= budget <= 350000:
-        return """🚀 Премиальная сборка:
+        return """🚀 **Премиальная сборка (317 000 - 350 000₽):**
 • Процессор: Intel Core i9-14900K
 • Видеокарта: RTX 5080
 • Материнская плата: Z790
@@ -205,8 +209,10 @@ def generate_build(budget: int, purpose: str) -> str:
 • SSD: 2TB NVMe
 • Блок питания: 1000W
 • Корпус: Полноразмерный"""
-     else:
-        return f"""⚙️ **Сборка под ваш бюджет {budget:,}₽:**...
+    
+    else:  
+        return f"""⚙️ **Сборка под ваш бюджет {budget:,}₽:**
+
 Подберем индивидуально! Напишите мне лично: @{MY_USERNAME}
 
 Мы подберем оптимальную конфигурацию под ваши задачи и бюджет."""
