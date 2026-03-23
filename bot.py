@@ -27,7 +27,7 @@ class ComputerBuild(StatesGroup):
     contact = State()
 
 
-@dp.message(Command("start"))
+@dp.message(commands=['start'])
 async def cmd_start(message: types.Message):
     await message.answer(
         "👋 Привет! Я помогу собрать компьютер под ваш бюджет.\n\n"
